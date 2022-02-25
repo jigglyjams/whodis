@@ -4,7 +4,7 @@ Fill in  keys in `.env`
 
 Run with `node ear.js`
 
-Uncomment
+Uncomment at bottom on `ear.js`
 ```
 // sounds.forEach( (s) => {
 //   ear(s);

@@ -27,7 +27,7 @@ async function getPastEvent(sound) {
   const ex = await contract.getPastEvents("allEvents", {
     fromBlock: fromBlock,
     toBlock: 'latest',
-    topics: sound.TOPICS
+    topics: sound.TOPICS[0]
   })
   return ex[0];
 }
@@ -49,9 +49,8 @@ const getHandle = async (id) => {
   return Web3.utils.hexToUtf8(dataBytes);
 }
 
-const getUriData = async (ipfs, id) => {
-  const uriOf = await globalContract.methods.uriOf(id).call();
-  const uriData = await axios.get(`${ipfs}/${uriOf}`);
+const getUriData = async (ipfs, cid) => {
+  const uriData = await axios.get(`${ipfs}/${cid}`);
   return uriData.data;
 }
 
@@ -59,10 +58,10 @@ async function mapData(data) {
   const sI = sounds.findIndex( i => { return i.CONTRACT === data.address }); 
   const tokenId = parseInt(data.returnValues[sounds[sI]['ID']]);
   let value = -2;
-  const projectHandle = await getHandle(tokenId);
-  const uriData = await getUriData(sounds[sI]['URI_SRC'], tokenId);
-  const img = (uriData.logoUri === "") ? -1 : await getImage(uriData.logoUri);
-  const marketURL = `${sounds[sI].MARKET}/${projectHandle}`;
+  // const projectHandle = await getHandle(tokenId);
+  const uriData = await getUriData(sounds[sI]['URI_SRC'], data.returnValues['metadata']['content']);
+  const img = (uriData.logoUri === "") ? -1 : await getImage(uriData.logoUri.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+  const marketURL = `${sounds[sI].MARKET}/${tokenId}`;
   await sendMessage(sounds[sI].DISCORD_CHANNEL, sounds[sI].NAME, uriData.name, tokenId, uriData.description, img, value, marketURL, uriData);
   log(`${sounds[sI].NAME} ${tokenId}, ${marketURL}`);
 }
@@ -94,7 +93,7 @@ const sendMessage = async (channel, name, projectName, tokenId, description, png
     .setTitle(`${tokenId}: ${projectName}`)
     .setURL(marketURL)
     .setDescription('🧃  new juice who dis? 🤔')
-    .addField('About', description);
+    .addField('About', (description === '') ? '???' : description);
   (value > 0) ? message.addField('Sale Price',`Ξ${value}`) : null;
   (png !== -1) ? message.setImage(`attachment://${attachmentName}`) : null;
   (socials.twitter !== '') ? message.addField('Twitter', `https://twitter.com/${socials.twitter}`) : null;
@@ -107,10 +106,10 @@ const sendMessage = async (channel, name, projectName, tokenId, description, png
   }
 }
 
-// sounds.forEach( (s) => {
-//   ear(s);
-// });
-
-getPastEvent(sounds[0]).then( u => {
-  mapData(u);
+sounds.forEach( (s) => {
+  ear(s);
 });
+
+// getPastEvent(sounds[0]).then( u => {
+//   mapData(u);
+// });

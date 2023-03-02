@@ -14,21 +14,21 @@ export const config = {
 export const sounds = [
   {
     NAME: "JB",
-    CONTRACT: "0x9b5a4053FfBB11cA9cd858AAEE43cc95ab435418",
+    CONTRACT: "0xD8B4359143eda5B2d763E127Ed27c77addBc47d3",
     TOPICS: [
-      "0x06e07e862bc5e6be67193c75556d1659653327c7846a45ee9921c917717395d8", // Create
+      "0xc52a0cb543347d5c28989b6a2b774d732f38c0b13824aec34a68af8caea1a394", // Create
     ],
     ID: "projectId",
     URI: "uri",
     HANDLE: "handle",
-    URI_SRC: "https://jbx.mypinata.cloud/ipfs",
+    URI_SRC: "https://ipfs.io/ipfs",
     //DISCORD_CHANNEL: "875535133258690611", // Canu
-    DISCORD_CHANNEL: "905859896019419157", // jigglys bots
+    DISCORD_CHANNEL: "889377541675159605", // jigglys bots
     MESSAGE: {
       DESCRIPTION: "New juice who dis?"
     },
     GET_VALUE: 0,
     DECIMAL: 18,
-    MARKET: "https://juicebox.money/#/p"
+    MARKET: "https://juicebox.money/v2/p"
   }
 ]

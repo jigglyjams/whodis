@@ -24,12 +24,11 @@ var globalContract;
 async function getPastEvent(sound) {
   const fromBlock = await web3_http.eth.getBlockNumber() - 9999;
   const contract = await getContract(sound.CONTRACT, 1);
-  const ex = await contract.getPastEvents("allEvents", {
+  const ex = await contract.getPastEvents("Create", {
     fromBlock: fromBlock,
     toBlock: 'latest',
-    topics: sound.TOPICS[0]
   })
-  return ex[0];
+  return ex[ex.length-1];
 }
 
 async function getImage(src) {
@@ -69,9 +68,7 @@ async function mapData(data) {
 const ear = async (sound) => {
   const contract = await getContract(sound.CONTRACT)
   console.log(globalContract);
-  contract.events.allEvents({
-    topics: sound.TOPICS
-  })
+  contract.events.Create()
     .on('data', function(event) {
       mapData(event);
   })

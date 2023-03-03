@@ -16,7 +16,7 @@ export const sounds = [
     NAME: "JB",
     CONTRACT: "0xD8B4359143eda5B2d763E127Ed27c77addBc47d3",
     TOPICS: [
-      "0xc52a0cb543347d5c28989b6a2b774d732f38c0b13824aec34a68af8caea1a394", // Create
+      "0xf3e6948ba8b32d557363ea08470121c47c0127659aed09320812174d373afef2", // Create
     ],
     ID: "projectId",
     URI: "uri",

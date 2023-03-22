@@ -1,8 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-console.log(process.env.NODE_ENV);
-
 export const config = {
   DISCORD_KEY: process.env.NODE_ENV === 'dev' ? process.env.DISCORD_KEY_DEV : process.env.DISCORD_KEY,
   ETHERSCAN_KEY: process.env.ETHERSCAN_KEY,
@@ -23,7 +21,9 @@ export const sounds = [
     HANDLE: "handle",
     URI_SRC: "https://ipfs.io/ipfs",
     //DISCORD_CHANNEL: "875535133258690611", // Canu
-    DISCORD_CHANNEL: "889377541675159605", // jigglys bots
+    //DISCORD_CHANNEL: "905859896019419157", // jigglys bots
+    //DISCORD_CHANNEL: "874810209367908413", // JB heartbeat
+    DISCORD_CHANNEL: "932672511483711528", // JB heartbeat -> thread
     MESSAGE: {
       DESCRIPTION: "New juice who dis?"
     },

@@ -1,5 +1,5 @@
 import { config, sounds } from "./config.js"
-import { log, sleep } from "./utils.js";
+import { chunkString, log, sleep } from "./utils.js";
 
 import { Client, Intents, MessageEmbed, MessageAttachment } from 'discord.js';
 const discord = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -17,6 +17,8 @@ const options = {
 
 import Web3 from 'web3';
 import axios from 'axios';
+import { client } from './tweet.js';
+
 var web3_ws = new Web3(new Web3.providers.WebsocketProvider(config.RPC_SOCKET, options));
 var web3_http = new Web3(config.RPC_HTTP);
 var globalContract;
@@ -28,7 +30,7 @@ async function getPastEvent(sound) {
     fromBlock: fromBlock,
     toBlock: 'latest',
   })
-  return ex[ex.length-1];
+  return ex[ex.length-2];
 }
 
 async function getImage(src) {
@@ -43,11 +45,6 @@ async function getContract(contractAddress, http = 0) {
   return (http === 0) ? new web3_ws.eth.Contract(abi, contractAddress) : new web3_http.eth.Contract(abi, contractAddress);
 }
 
-const getHandle = async (id) => {
-  const dataBytes = await globalContract.methods.handleOf(id).call();
-  return Web3.utils.hexToUtf8(dataBytes);
-}
-
 const getUriData = async (ipfs, cid) => {
   const uriData = await axios.get(`${ipfs}/${cid}`);
   return uriData.data;
@@ -57,11 +54,15 @@ async function mapData(data) {
   const sI = sounds.findIndex( i => { return i.CONTRACT === data.address }); 
   const tokenId = parseInt(data.returnValues[sounds[sI]['ID']]);
   let value = -2;
-  // const projectHandle = await getHandle(tokenId);
   const uriData = await getUriData(sounds[sI]['URI_SRC'], data.returnValues['metadata']['content']);
   const img = (uriData.logoUri === "") ? -1 : await getImage(uriData.logoUri.replace('ipfs://', 'https://ipfs.io/ipfs/'));
   const marketURL = `${sounds[sI].MARKET}/${tokenId}`;
   await sendMessage(sounds[sI].DISCORD_CHANNEL, sounds[sI].NAME, uriData.name, tokenId, uriData.description, img, value, marketURL, uriData);
+  const pic = await client.v1.uploadMedia(img, { mimeType: 'png' });
+  await client.v2.tweetThread([
+    { text:`${uriData.name}\n${marketURL}`, media: { media_ids: [pic] }},
+    ...chunkString(uriData.description)
+  ])
   log(`${sounds[sI].NAME} ${tokenId}, ${marketURL}`);
 }
 
@@ -73,7 +74,7 @@ const ear = async (sound) => {
       mapData(event);
   })
     .on("connected", function(subscriptionId){
-      //log(subscriptionId);
+      log(subscriptionId);
     })
 }
 
